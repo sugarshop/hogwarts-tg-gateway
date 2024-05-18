@@ -10,7 +10,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-TG_BOT_TOKEN = 'XXXXXXXX'
+TG_BOT_TOKEN = 'XXXXX'
 BASE_URL = 'http://localhost:8080'
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -19,7 +19,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def subscribe_address(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = BASE_URL + "/v1/subscribe"
-    wallet_address = update.message.text
+    text = update.message.text.split(' ')[-1]
+    wallet_address = text
+
     # Check address if is valid.
     params = {"address": wallet_address}
     # POST
@@ -43,12 +45,12 @@ async def subscribe_address(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def address_transactions(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    wallet_address = update.message.text
+    text = update.message.text.split(' ')[-1]
+    wallet_address = text
     # Check address if is valid.
     params = {"address": wallet_address}
     # define request URL
     url = BASE_URL + "/v1/get_transactions"
-    print(url)
     # POST
     response = requests.get(url, params=params)
     
