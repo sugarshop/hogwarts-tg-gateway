@@ -3,19 +3,73 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, filters, MessageHandler
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import InlineQueryHandler
+import requests
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
-TG_BOT_TOKEN = 'XXXXXX'
+TG_BOT_TOKEN = 'XXXXXXXX'
+BASE_URL = 'http://localhost:8080'
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Welcome to Hogwarts, the wisdom hat guides you towards the gateway of the magical world.")
 
+
 async def subscribe_address(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="subscribe wallet address")
+    url = BASE_URL + "/v1/subscribe"
+    wallet_address = update.message.text
+    # Check address if is valid.
+    params = {"address": wallet_address}
+    # POST
+    response = requests.post(url, data=params)
+    
+    return_message = "subscribe wallet address"
+    
+    # check resp status code
+    if response.status_code == 200:
+        # parse JSON
+        data = response.json()
+
+        # check resp code
+        if data["code"] == 0:
+            return_message = wallet_address + " transactions subscribed."
+        else:
+            return_message = f"subscribed failed with err code: {data['code']}"
+    else:
+        return_message = f"request failed, status code: {response.status_code}"
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=return_message)
+
+
+async def address_transactions(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    wallet_address = update.message.text
+    # Check address if is valid.
+    params = {"address": wallet_address}
+    # define request URL
+    url = BASE_URL + "/v1/get_transactions"
+    print(url)
+    # POST
+    response = requests.get(url, params=params)
+    
+    return_message = "empty transactions record."
+    
+    # check resp status code
+    if response.status_code == 200:
+        # parse JSON
+        data = response.json()
+
+        # check resp code
+        if data["code"] == 0:
+            print("get address transactions successsed.")
+            # get transactions info here.
+            return_message = data["data"]
+        else:
+            print(f"get address transactions failed, err code: {data['code']}")
+    else:
+        return_message = f"request failed, status code: {response.status_code}"
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=return_message)
+
 
 async def echo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
@@ -43,12 +97,14 @@ if __name__ == '__main__':
     
     start_handler = CommandHandler('start', start)
     subscribe_handler = CommandHandler('subscribe', subscribe_address)
+    address_transactions_handler = CommandHandler('transactions', address_transactions)
     caps_handler = CommandHandler('caps', caps)
     # echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), echo)
     inline_caps_handler = InlineQueryHandler(inline_caps)
 
     application.add_handler(start_handler)
     application.add_handler(subscribe_handler)
+    application.add_handler(address_transactions_handler)
     # application.add_handler(echo_handler) // 造成群内消息复读
     application.add_handler(caps_handler)
     application.add_handler(inline_caps_handler)
