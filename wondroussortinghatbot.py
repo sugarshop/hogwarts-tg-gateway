@@ -10,8 +10,8 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-TG_BOT_TOKEN = 'XXXXX'
-BASE_URL = 'http://localhost:8080'
+TG_BOT_TOKEN = 'XXXXXXXX'
+BASE_URL = 'https://cxlinks.us'
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Welcome to Hogwarts, the wisdom hat guides you towards the gateway of the magical world.")
