@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tg-gateway
+  labels:
+    app: tg-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tg-gateway
+  template:
+    metadata:
+      labels:
+        app: tg-gateway
+    spec:
+      containers:
+        - name: tg-gateway
+          command:
+            - /app/bootstrap.sh
+          image: registry.digitalocean.com/francisco/hogwarts-tg-gateway:20240523113351
+          envFrom:
+          - configMapRef:
+              name: tg-gateway-conf
+          resources: {}
+          ports:
+            - containerPort: 8080
+      volumes:
+        - name: tg-gateway-config
+          configMap:
+            name: tg-gateway-conf
