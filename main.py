@@ -2,7 +2,13 @@ import logging
 from telegram.ext import ApplicationBuilder
 import requests
 import os
-from handlers import start_handler, subscribe_handler, address_transactions_handler, caps_handler, inline_caps_handler
+from handlers import (
+    start_handler, 
+    subscribe_handler, 
+    address_transactions_handler, 
+    caps_handler, 
+    inline_caps_handler
+)
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
