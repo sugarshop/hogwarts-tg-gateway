@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tg-gateway-conf
+data:
+  config.json: |
+    {
+        "TG_BOT_TOKEN": "XXXXXXXXX",
+        "BASE_URL": "https://cxlinks.us"
+    }

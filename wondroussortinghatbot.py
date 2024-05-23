@@ -4,21 +4,22 @@ from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, filte
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import InlineQueryHandler
 import requests
+import os
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 
-TG_BOT_TOKEN = 'XXXXX'
-BASE_URL = 'http://localhost:8080'
+TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'empty value')
+WALLET_URL = os.environ.get('WALLET_URL', 'empty value')
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Welcome to Hogwarts, the wisdom hat guides you towards the gateway of the magical world.")
 
 
 async def subscribe_address(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    url = BASE_URL + "/v1/subscribe"
+    url = WALLET_URL + "/v1/subscribe"
     text = update.message.text.split(' ')[-1]
     wallet_address = text
 
@@ -50,7 +51,7 @@ async def address_transactions(update: Update, context: ContextTypes.DEFAULT_TYP
     # Check address if is valid.
     params = {"address": wallet_address}
     # define request URL
-    url = BASE_URL + "/v1/get_transactions"
+    url = WALLET_URL + "/v1/get_transactions"
     # POST
     response = requests.get(url, params=params)
     
