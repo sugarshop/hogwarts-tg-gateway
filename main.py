@@ -1,13 +1,15 @@
 import logging
 from telegram.ext import ApplicationBuilder
+from telegram import Update
 import requests
 import os
 from handlers import (
     start_handler, 
     subscribe_handler, 
     address_transactions_handler, 
-    caps_handler, 
-    inline_caps_handler
+    start_handler,
+    inlineKeyboard_button_handler,
+    help_handler
 )
 
 logging.basicConfig(
@@ -23,7 +25,7 @@ if __name__ == '__main__':
     application.add_handler(start_handler)
     application.add_handler(subscribe_handler)
     application.add_handler(address_transactions_handler)
-    application.add_handler(caps_handler)
-    application.add_handler(inline_caps_handler)
+    application.add_handler(inlineKeyboard_button_handler)
+    application.add_handler(help_handler)
     
-    application.run_polling()
+    application.run_polling(allowed_updates=Update.ALL_TYPES)

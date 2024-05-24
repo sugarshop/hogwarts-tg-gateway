@@ -5,7 +5,7 @@ FROM python:3.9
 WORKDIR /app
 
 # COPY Python exec file to WORKDIR
-COPY wondroussortinghatbot.py .
+COPY *.py .
 COPY requirements.txt .
 COPY script/bootstrap.sh .
 

@@ -2,4 +2,4 @@
 
 CURDIR=$(cd $(dirname $0); pwd)
 
-exec python "$CURDIR/wondroussortinghatbot.py"
+exec python "$CURDIR/main.py"
