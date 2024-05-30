@@ -3,7 +3,7 @@ from telegram.ext import ContextTypes
 import requests
 import os
 
-WALLET_URL = os.environ.get('WALLET_URL', 'empty value')
+WALLET_URL = os.environ.get('BASE_URL', 'empty value')
 
 async def subscribe_address(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = WALLET_URL + "/v1/subscribe"
