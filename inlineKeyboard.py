@@ -10,7 +10,8 @@ from telegram.ext import (
 	CallbackQueryHandler, 
 	CommandHandler,
     ConversationHandler,
-	ContextTypes)
+	ContextTypes
+    )
 
 from wallet import (
     subscribe_address,
@@ -46,9 +47,9 @@ CALLBACK_DATA_ADDRESS_TRANSACTION = "address_transactions"
 CALLBACK_DATA_HELP = "help"
 CALLBACK_DATA_EMPTY = "empty"
 
-SUBSCRIBE, = range(1)
+CHOOSING, SUBSCRIBE_BUTTON_TRIGGERED, ADDRESS_TRANSACTION_BUTTON_TRIGGERED = range(3)
 
-async def keyboard_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def keyboard_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Sends a message with three inline buttons attached."""
     keyboard = [
         [
@@ -66,9 +67,9 @@ async def keyboard_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         caption=message_content,
         reply_markup=reply_markup
     )
-    # await update.message.reply_text(message_content, reply_markup=reply_markup)
+    return CHOOSING
 
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Parses the CallbackQuery and updates the message text."""
     query = update.callback_query
 
@@ -80,24 +81,34 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Handle different callback data options
     if query.data == CALLBACK_DATA_SUBSCRIBE:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter your Ethereum address:")
-        return SUBSCRIBE
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter Ethereum address:")
+        return SUBSCRIBE_BUTTON_TRIGGERED
     elif query.data == CALLBACK_DATA_ADDRESS_TRANSACTION:
-        await address_transactions(update, context)
-        return 0
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="Please enter Ethereum address:")
+        return ADDRESS_TRANSACTION_BUTTON_TRIGGERED
     elif query.data == CALLBACK_DATA_HELP:
         await help_command(update, context)
-        return 0
+        return CHOOSING
     else:
         await query.edit_message_text(text=f"Selected option: {query.data}")
 
     await query.edit_message_text(text=f"Selected option: {query.data}")
-    return 0
+    return CHOOSING
 
 async def subscribe_address_conv(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info("[subscribe_address_conv]: %s.", update.message.text)
     await subscribe_address(update, context)
-    return ConversationHandler.END
+    return CHOOSING
+
+async def address_transactions_conv(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logger.info("[address_transactions_conv]: %s.", update.message.text)
+    await address_transactions(update, context)
+    return CHOOSING
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Displays info on how to use the bot."""
+    await context.bot.send_message(chat_id=update.effective_chat.id, text="Use /start to test this bot.")
+    return CHOOSING
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels and ends the conversation."""
@@ -106,7 +117,3 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
         "Bye! I hope we can talk again some day.")
     return ConversationHandler.END
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Displays info on how to use the bot."""
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="Use /start to test this bot.")
