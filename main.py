@@ -1,18 +1,17 @@
 import logging
-from telegram.ext import ApplicationBuilder
+from telegram.ext import (
+    ApplicationBuilder,
+    PicklePersistence
+)
 from telegram import Update
 import requests
 import os
 from handlers import (
-    start_handler, 
-    subscribe_handler, 
-    address_transactions_handler, 
-    start_handler,
-    inlineKeyboard_button_handler,
-    help_handler,
-    conv_cancel_handler,
-    subscribe_address_conv_handler,
-    wallet_address_subscribe_handler
+    conv_handler,
+    show_chat_modes_callback_query_handler,
+    set_chat_mode_callback_query_handler,
+    cancel_chat_mode_callback_query_handler,
+    show_languages_callback_query_handler
 )
 
 logging.basicConfig(
@@ -28,15 +27,15 @@ logger = logging.getLogger(__name__)
 TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN', 'empty value')
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token(TG_BOT_TOKEN).build()
+    # Create the Updater and pass it your bot's token.
+    persistence = PicklePersistence(filepath='conversationbot')
+
+    application = ApplicationBuilder().token(TG_BOT_TOKEN).persistence(persistence).build()
     
-    application.add_handler(start_handler)
-    application.add_handler(subscribe_handler)
-    application.add_handler(address_transactions_handler)
-    application.add_handler(inlineKeyboard_button_handler)
-    application.add_handler(help_handler)
-    application.add_handler(conv_cancel_handler)
-    application.add_handler(subscribe_address_conv_handler)
-    application.add_handler(wallet_address_subscribe_handler)
+    application.add_handler(conv_handler)
+    application.add_handler(show_chat_modes_callback_query_handler)
+    application.add_handler(set_chat_mode_callback_query_handler)
+    application.add_handler(cancel_chat_mode_callback_query_handler)
+    application.add_handler(show_languages_callback_query_handler)
     
     application.run_polling(allowed_updates=Update.ALL_TYPES)
