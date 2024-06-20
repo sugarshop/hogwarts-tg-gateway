@@ -7,43 +7,93 @@ from telegram.ext import (
 	filters,
 	)
 from telegram import (
-	InlineQueryResultArticle, 
+	InlineQueryResultArticle,
 	InputTextMessageContent
 	)
-from wallet import (
-	subscribe_address, 
-	address_transactions
-	)
-from inlineKeyboard import (
-	keyboard_start, 
-	button, 
-	help_command,
-	subscribe_address_conv,
-	address_transactions_conv,
-	cancel,
-	CHOOSING,
-	SUBSCRIBE_BUTTON_TRIGGERED,
-	ADDRESS_TRANSACTION_BUTTON_TRIGGERED,
-	CALLBACK_DATA_SUBSCRIBE,
-	CALLBACK_DATA_ADDRESS_TRANSACTION,
-	CALLBACK_DATA_HELP
-	)
-
-subscribe_handler = CommandHandler('subscribe', subscribe_address)
-address_transactions_handler = CommandHandler('transactions', address_transactions)
-
-start_handler = CommandHandler("start", keyboard_start)
-subscribe_address_conv_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, subscribe_address_conv)
-address_transactions_conv_handler = MessageHandler(filters.TEXT & ~filters.COMMAND, address_transactions_conv)
-help_handler = CommandHandler("help", help_command)
-conv_cancel_handler = CommandHandler("cancel", cancel)
-
-wallet_address_subscribe_handler = ConversationHandler(
-	entry_points=[start_handler],
-	states={
-		CHOOSING: [CallbackQueryHandler(button, pattern=f"^({CALLBACK_DATA_SUBSCRIBE}|{CALLBACK_DATA_HELP}|{CALLBACK_DATA_ADDRESS_TRANSACTION})$")],
-		SUBSCRIBE_BUTTON_TRIGGERED: [subscribe_address_conv_handler],
-		ADDRESS_TRANSACTION_BUTTON_TRIGGERED: [address_transactions_conv_handler]
-	},
-    fallbacks=[conv_cancel_handler],
+from config import (
+	subscribe_address_button,
+	address_transactions_button,
+    contact_admin,
+    chat_button,
+    set_sys_content_button,
+    reset_context_button,
+    statistics_button,
+    switch_role_button,
+    language_button,
+    cancel_button,
+    CHOOSING, TYPING_REPLY, TYPING_SYS_CONTENT, TYPING_SUBSCRIBED_ADDR, TYPING_ADDR_TRANS
 )
+from buttons.inline import (
+    show_chat_modes_handle,
+    show_chat_modes_callback_handle,
+    set_chat_mode_handle,
+    cancel_chat_mode_handle,
+)
+from buttons.start import start
+from buttons.language import show_languages, show_languages_callback_handle
+from buttons.wallet import subscribe_address, address_transactions, subscribe_address_handler, address_transactions_handler
+from buttons.help import helper
+from buttons.chat import chat
+from buttons.cancel import cancel_handler
+from buttons.role import set_system_content, reset_context, set_system_content_handler
+from buttons.statistics import statistics
+from buttons.others import non_text_handler, done, error_handler
+
+from chat.handler import answer_handler
+
+
+conv_handler = ConversationHandler(
+	entry_points=[
+			MessageHandler(filters.Regex(f'^/start$'), start, ),
+		],
+	states={
+		CHOOSING: [
+			MessageHandler(filters.Regex(f'^/start$'), start, ),
+			MessageHandler(filters.Regex(f'^{contact_admin}$'), helper, ),
+            MessageHandler(filters.Regex(f'^({chat_button}|/chat|Chat)$'), chat, ),
+            MessageHandler(filters.Regex(f'^{language_button}$'), show_languages, ),
+            MessageHandler(filters.Regex(f'^{subscribe_address_button}$'), subscribe_address, ),
+            MessageHandler(filters.Regex(f'^{address_transactions_button}$'), address_transactions, ),
+            MessageHandler(filters.Regex(f"^{reset_context_button}$"), reset_context),
+            MessageHandler(filters.Regex(f"^{set_sys_content_button}$"), set_system_content),
+            MessageHandler(filters.Regex(f"^{statistics_button}$"), statistics),
+            MessageHandler(filters.Regex(f"^{switch_role_button}$"), show_chat_modes_handle),
+            MessageHandler(filters.TEXT, answer_handler),
+            MessageHandler(filters.ATTACHMENT, non_text_handler),
+		],
+		TYPING_REPLY: [
+			MessageHandler(filters.Regex(f'^/start$'), start, ),
+			MessageHandler(filters.Regex(f'^{contact_admin}$'), helper, ),
+            MessageHandler(filters.Regex(f'^({chat_button}|/chat|Chat)$'), chat, ),
+            MessageHandler(filters.Regex(f'^{language_button}$'), show_languages, ),
+            MessageHandler(filters.Regex(f'^{subscribe_address_button}$'), subscribe_address, ),
+            MessageHandler(filters.Regex(f'^{address_transactions_button}$'), address_transactions, ),
+            MessageHandler(filters.Regex(f"^{reset_context_button}$"), reset_context),
+            MessageHandler(filters.Regex(f"^{set_sys_content_button}$"), set_system_content),
+            MessageHandler(filters.Regex(f"^{statistics_button}$"), statistics),
+            MessageHandler(filters.Regex(f"^{switch_role_button}$"), show_chat_modes_handle),
+            MessageHandler(filters.TEXT, answer_handler),
+            MessageHandler(filters.ATTACHMENT, non_text_handler),
+		],
+		TYPING_SYS_CONTENT: [
+            MessageHandler(filters.TEXT, set_system_content_handler),
+            MessageHandler(filters.Regex(f"^{cancel_button}$"), cancel_handler, )
+        ],
+        TYPING_SUBSCRIBED_ADDR: [
+        	MessageHandler(filters.Regex(f'^{subscribe_address_button}$'), subscribe_address_handler),
+            MessageHandler(filters.Regex(f"^{cancel_button}$"), cancel_handler, )
+        ],
+        TYPING_ADDR_TRANS: [
+        	MessageHandler(filters.Regex(f'^{address_transactions_button}$'), address_transactions_handler),
+        	MessageHandler(filters.Regex(f"^{cancel_button}$"), cancel_handler, )
+        ],
+	},
+    fallbacks=[MessageHandler(filters.Regex('^Done$'), done)],
+    name="my_conversation",
+    persistent=True,
+)
+
+show_chat_modes_callback_query_handler = CallbackQueryHandler(show_chat_modes_callback_handle, pattern="^show_chat_modes")
+set_chat_mode_callback_query_handler = CallbackQueryHandler(set_chat_mode_handle, pattern="^set_chat_mode")
+cancel_chat_mode_callback_query_handler = CallbackQueryHandler(cancel_chat_mode_handle, pattern="^cancel")
+show_languages_callback_query_handler = CallbackQueryHandler(show_languages_callback_handle, pattern="^lang")

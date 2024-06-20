@@ -30,8 +30,8 @@ async def answer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     user_checkin = mysql.getOne(f"select * from users where user_id={user_id}")
     if not user_checkin:
         date_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        sql = "insert into users (user_id, name, nick_name level, system_content, created_at) values (%s, %s, %s, %s, %s, %s)"
-        value = [user_id, user.username, nick_name, 0, "You are an AI assistant that helps people find information.",
+        sql = "insert into users (user_id, name, nick_name, level, system_content, created_at) values (%s, %s, %s, %s, %s, %s)"
+        value = [user_id, user.username, nick_name, 1, "You are an AI assistant that helps people find information.",
                  date_time]
         mysql.insertOne(sql, value)
 
@@ -50,7 +50,7 @@ async def answer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if chat_count.get("count") > rate_limit[level]:
         reply = f"请求太快了!{emoji.emojize(':rocket:')}\n" \
                 f"您每 {time_span} 分钟最多可向我提问 {rate_limit[level]} 个问题{emoji.emojize(':weary_face:')}\n" \
-                f"联系 @AiMessagerBot 获取更多帮助!{emoji.emojize(':check_mark_button:')}\n" \
+                f"Contact https://t.me/+Xr4J4GPwnYQ0ZmEx 获取更多帮助!{emoji.emojize(':check_mark_button:')}\n" \
                 f"或稍后再试！"
         await update.message.reply_text(reply, reply_markup=reply_markup)
         return CHOOSING

@@ -8,6 +8,7 @@ CREATE TABLE `users` (
   `ID` int NOT NULL AUTO_INCREMENT,
   `name` varchar(128) DEFAULT NULL,
   `nick_name` varchar(128) DEFAULT NULL,
+  `lang` varchar(128) DEFAULT 'en',
   `user_id` bigint DEFAULT NULL,
   `level` tinyint DEFAULT NULL,
   `parse_mode` varchar(10) DEFAULT 'Markdown',

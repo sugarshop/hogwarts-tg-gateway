@@ -1,5 +1,5 @@
 from config import token
-from openai import AzureOpenAI, OpenAI
+from openai import OpenAI
 from db.MySqlConn import config
 
 OPENAI_CHAT_COMPLETION_OPTIONS = {
@@ -12,18 +12,12 @@ OPENAI_CHAT_COMPLETION_OPTIONS = {
     "model": config["AI"]["MODEL"]
 }
 
-
 async def ChatCompletionsAI(logged_in_user, messages) -> (str, str):
     level = logged_in_user.get("level")
-    azureOpenAIConfig = {'api_key': config["AI"]["TOKEN"],
-                         'azure_endpoint': config["AI"]["BASE"],
-                         'api_version': config["AI"]["VERSION"]}
+    openAIConfig = {'api_key': config["AI"]["TOKEN"]}
 
     answer = ""
-    if config["AI"]["TYPE"] == "azure":
-        client = AzureOpenAI(**azureOpenAIConfig)
-    else:
-        client = OpenAI(**azureOpenAIConfig)
+    client = OpenAI(**openAIConfig)
     with client.chat.completions.with_streaming_response.create(
             messages=messages,
             max_tokens=token[level],
