@@ -48,7 +48,7 @@ Smoothy AI-Driven KOL Bot, thanks to [ChatGPT-Telegram-Bot](https://github.com/V
 
 ## 🤖Quick Experience
 
-Telegram Bot: [CXLinkBot]([https://t.me/RoboAceBot](https://t.me/cxlink_bot)
+Telegram Bot: [CXLinkBot](https://t.me/cxlink_bot)
 
 ## 🛠️Deployment
 
