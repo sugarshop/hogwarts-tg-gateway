@@ -25,6 +25,7 @@ token = config["MAX_TOKEN"]
 context_count = config["CONTEXT_COUNT"]
 rate_limit = config["RATE_LIMIT"]
 notification_channel = config.get("NOTIFICATION_CHANNEL")
+manifest_url = config["MANIFEST_URL"]
 
 CHOOSING, TYPING_REPLY, TYPING_SYS_CONTENT, TYPING_SUBSCRIBED_ADDR, TYPING_ADDR_TRANS = range(5)
 subscribe_address_button = "🪙Subscribe Address"
@@ -36,9 +37,10 @@ reset_context_button = "🔃Restart Session"
 statistics_button = "📈Statistics"
 switch_role_button = "🙋Switch Roles"
 language_button = "🔤Language"
+wallet_connect = "💰Wallet"
 reply_keyboard = [
     [language_button, contact_admin, chat_button],
-    [subscribe_address_button, address_transactions_button],
+    [subscribe_address_button, address_transactions_button, wallet_connect],
     [set_sys_content_button, switch_role_button],
     [reset_context_button, statistics_button],
 ]
