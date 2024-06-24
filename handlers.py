@@ -20,6 +20,7 @@ from config import (
     statistics_button,
     switch_role_button,
     language_button,
+    wallet_connect,
     cancel_button,
     CHOOSING, TYPING_REPLY, TYPING_SYS_CONTENT, TYPING_SUBSCRIBED_ADDR, TYPING_ADDR_TRANS
 )
@@ -41,14 +42,17 @@ from buttons.others import non_text_handler, done, error_handler
 
 from chat.handler import answer_handler
 
-
+from ton.connect import (
+    ton_wallet_connect_handler,
+    ton_wallet_connect_callback_handle
+    )
 conv_handler = ConversationHandler(
 	entry_points=[
 			MessageHandler(filters.Regex(f'^/start$'), start, ),
 		],
 	states={
 		CHOOSING: [
-			MessageHandler(filters.Regex(f'^/start$'), start, ),
+            MessageHandler(filters.Regex(f'^/start$'), start, ),
 			MessageHandler(filters.Regex(f'^{contact_admin}$'), helper, ),
             MessageHandler(filters.Regex(f'^({chat_button}|/chat|Chat)$'), chat, ),
             MessageHandler(filters.Regex(f'^{language_button}$'), show_languages, ),
@@ -58,11 +62,12 @@ conv_handler = ConversationHandler(
             MessageHandler(filters.Regex(f"^{set_sys_content_button}$"), set_system_content),
             MessageHandler(filters.Regex(f"^{statistics_button}$"), statistics),
             MessageHandler(filters.Regex(f"^{switch_role_button}$"), show_chat_modes_handle),
+            MessageHandler(filters.Regex(f"^{wallet_connect}$"), ton_wallet_connect_handler),
             MessageHandler(filters.TEXT, answer_handler),
             MessageHandler(filters.ATTACHMENT, non_text_handler),
 		],
 		TYPING_REPLY: [
-			MessageHandler(filters.Regex(f'^/start$'), start, ),
+            MessageHandler(filters.Regex(f'^/start$'), start, ),
 			MessageHandler(filters.Regex(f'^{contact_admin}$'), helper, ),
             MessageHandler(filters.Regex(f'^({chat_button}|/chat|Chat)$'), chat, ),
             MessageHandler(filters.Regex(f'^{language_button}$'), show_languages, ),
@@ -72,6 +77,7 @@ conv_handler = ConversationHandler(
             MessageHandler(filters.Regex(f"^{set_sys_content_button}$"), set_system_content),
             MessageHandler(filters.Regex(f"^{statistics_button}$"), statistics),
             MessageHandler(filters.Regex(f"^{switch_role_button}$"), show_chat_modes_handle),
+            MessageHandler(filters.Regex(f"^{wallet_connect}$"), ton_wallet_connect_handler),
             MessageHandler(filters.TEXT, answer_handler),
             MessageHandler(filters.ATTACHMENT, non_text_handler),
 		],
@@ -97,3 +103,4 @@ show_chat_modes_callback_query_handler = CallbackQueryHandler(show_chat_modes_ca
 set_chat_mode_callback_query_handler = CallbackQueryHandler(set_chat_mode_handle, pattern="^set_chat_mode")
 cancel_chat_mode_callback_query_handler = CallbackQueryHandler(cancel_chat_mode_handle, pattern="^cancel")
 show_languages_callback_query_handler = CallbackQueryHandler(show_languages_callback_handle, pattern="^lang")
+ton_wallet_connect_callback_handler = CallbackQueryHandler(ton_wallet_connect_callback_handle, pattern="^ton_wallet")
