@@ -75,9 +75,9 @@ async def send_transaction(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         'valid_until': int(time.time() + 3600),
         'messages': [
             get_comment_message(
-                destination_address='0:0000000000000000000000000000000000000000000000000000000000000000',
+                destination_address='0:1ec5e23d1dabd33c5e15327ff6acec3e6ecb2ffaea1c6b960ec80e9c80c34272',
                 amount=int(0.01 * 10 ** 9),
-                comment='hello world!'
+                comment='cx link wallet transaction.'
             )
         ]
     }
