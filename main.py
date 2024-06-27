@@ -11,7 +11,8 @@ from handlers import (
     show_chat_modes_callback_query_handler,
     set_chat_mode_callback_query_handler,
     cancel_chat_mode_callback_query_handler,
-    show_languages_callback_query_handler
+    show_languages_callback_query_handler,
+    ton_wallet_connect_callback_handler
 )
 
 logging.basicConfig(
@@ -37,5 +38,6 @@ if __name__ == '__main__':
     application.add_handler(set_chat_mode_callback_query_handler)
     application.add_handler(cancel_chat_mode_callback_query_handler)
     application.add_handler(show_languages_callback_query_handler)
+    application.add_handler(ton_wallet_connect_callback_handler)
     
     application.run_polling(allowed_updates=Update.ALL_TYPES)
