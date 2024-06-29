@@ -40,7 +40,7 @@ from buttons.role import set_system_content, reset_context, set_system_content_h
 from buttons.statistics import statistics
 from buttons.others import non_text_handler, done, error_handler
 
-from chat.handler import answer_handler
+from chat.text_handler import text_answer_handler
 
 from ton.connect import (
     ton_wallet_connect_handler,
@@ -63,8 +63,8 @@ conv_handler = ConversationHandler(
             MessageHandler(filters.Regex(f"^{statistics_button}$"), statistics),
             MessageHandler(filters.Regex(f"^{switch_role_button}$"), show_chat_modes_handle),
             MessageHandler(filters.Regex(f"^{wallet_connect}$"), ton_wallet_connect_handler),
-            MessageHandler(filters.TEXT, answer_handler),
-            MessageHandler(filters.ATTACHMENT, non_text_handler),
+            MessageHandler(filters.TEXT | filters.PHOTO, text_answer_handler),
+            MessageHandler(filters.ATTACHMENT & (~filters.PHOTO), non_text_handler),
 		],
 		TYPING_REPLY: [
             MessageHandler(filters.Regex(f'^/start$'), start, ),
@@ -78,8 +78,8 @@ conv_handler = ConversationHandler(
             MessageHandler(filters.Regex(f"^{statistics_button}$"), statistics),
             MessageHandler(filters.Regex(f"^{switch_role_button}$"), show_chat_modes_handle),
             MessageHandler(filters.Regex(f"^{wallet_connect}$"), ton_wallet_connect_handler),
-            MessageHandler(filters.TEXT, answer_handler),
-            MessageHandler(filters.ATTACHMENT, non_text_handler),
+            MessageHandler(filters.TEXT | filters.PHOTO, text_answer_handler),
+            MessageHandler(filters.ATTACHMENT & (~filters.PHOTO), non_text_handler),
 		],
 		TYPING_SYS_CONTENT: [
             MessageHandler(filters.TEXT, set_system_content_handler),

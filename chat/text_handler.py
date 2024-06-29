@@ -19,10 +19,9 @@ from config import (
     notification_channel,
     context_count)
 
-
-async def answer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def text_answer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.effective_user
-    prompt = update.message.text
+    prompt = update.message.text or update.message.caption or ""
     user_id = user.id
     nick_name = user.full_name
     mysql = Mysql()
@@ -69,10 +68,27 @@ async def answer_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             messages.reverse()
         messages.insert(0, {"role": "system", "content": logged_in_user["system_content"]})
         prompt_tokens += count_tokens(logged_in_user["system_content"])
-        messages.append({"role": "user", "content": prompt})
+        
+        content = [{
+            "type" : "text",
+            "text" : prompt
+            }]
+        multimodal = False
+
+        if len(update.message.photo) != 0:
+            multimodal = True
+            photo = await update.message.photo[-1].get_file()
+            content.append({
+                "type" : "image_url",
+                "image_url" : {
+                    "url" : photo.file_path
+                }
+            })
+
+        messages.append({"role": "user", "content": content})
         prompt_tokens += count_tokens(prompt)
 
-        replies = ChatCompletionsAI(logged_in_user, messages)
+        replies = ChatCompletionsAI(logged_in_user, messages, multimodal)
         prev_answer = ""
         index = 0
         answer = ""

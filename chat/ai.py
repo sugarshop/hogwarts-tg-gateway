@@ -8,13 +8,18 @@ OPENAI_CHAT_COMPLETION_OPTIONS = {
     "frequency_penalty": 0,
     "presence_penalty": 0,
     "stream": True,
-    "stop": None,
+    # "stop": None,
     "model": config["AI"]["MODEL"]
 }
 
-async def ChatCompletionsAI(logged_in_user, messages) -> (str, str):
+async def ChatCompletionsAI(logged_in_user, messages, multimodal: bool) -> (str, str):
     level = logged_in_user.get("level")
     openAIConfig = {'api_key': config["AI"]["TOKEN"]}
+
+    if multimodal:
+        OPENAI_CHAT_COMPLETION_OPTIONS["model"] = config["AI"]["MULTIMODAL"]
+    else:
+        OPENAI_CHAT_COMPLETION_OPTIONS["model"] = config["AI"]["MODEL"]
 
     answer = ""
     client = OpenAI(**openAIConfig)
