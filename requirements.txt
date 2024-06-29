@@ -37,3 +37,6 @@ typing_extensions==4.11.0
 urllib3==1.26.18
 wakatime==13.1.0
 yarl==1.8.2
+pytoniq-core>=0.1.10
+pytonconnect>=0.3.0
+qrcode~=7.4.2
